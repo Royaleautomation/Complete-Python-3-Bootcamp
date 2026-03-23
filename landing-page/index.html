@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Automation & Innovation</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #0a0e1a;
+      --surface:   #111827;
+      --card:      #1a2235;
+      --border:    #1e2d45;
+      --accent:    #6c63ff;
+      --accent2:   #00d4ff;
+      --accent3:   #ff6584;
+      --text:      #e2e8f0;
+      --muted:     #8892a4;
+      --gradient:  linear-gradient(135deg, #6c63ff 0%, #00d4ff 100%);
+      --glow:      0 0 40px rgba(108,99,255,.35);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background particles ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(108,99,255,.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(0,212,255,.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout helpers ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    section { padding: 100px 0; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,26,.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1100px; margin: 0 auto; padding: 18px 24px;
+    }
+    .logo {
+      font-size: 1.25rem; font-weight: 700; letter-spacing: -.5px;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--gradient); color: #fff; border: none;
+      padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: .88rem;
+      cursor: pointer; text-decoration: none; transition: opacity .2s, transform .2s;
+    }
+    .nav-cta:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 90vh; display: flex; align-items: center;
+      padding: 80px 0 60px;
+    }
+    .hero-content { max-width: 650px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3);
+      color: var(--accent); padding: 6px 14px; border-radius: 20px;
+      font-size: .8rem; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: .4; }
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800; line-height: 1.15;
+      letter-spacing: -.02em; margin-bottom: 24px;
+    }
+    .gradient-text {
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted); margin-bottom: 40px;
+      max-width: 540px; line-height: 1.75;
+    }
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gradient); color: #fff; text-decoration: none;
+      padding: 14px 32px; border-radius: 10px; font-weight: 700; font-size: .95rem;
+      box-shadow: var(--glow); transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(108,99,255,.5); }
+    .btn-outline {
+      border: 1px solid var(--border); color: var(--text); text-decoration: none;
+      padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: .95rem;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(108,99,255,.08); }
+
+    /* floating visual */
+    .hero-visual {
+      position: absolute; right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: min(480px, 45vw); opacity: .35;
+      pointer-events: none;
+    }
+    .hero-wrapper { position: relative; }
+
+    /* ── STATS ── */
+    .stats {
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 40px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2.4rem; font-weight: 800;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .stat-label { color: var(--muted); font-size: .85rem; margin-top: 6px; font-weight: 500; }
+
+    /* ── SECTION HEADER ── */
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-tag {
+      display: inline-block;
+      color: var(--accent); font-size: .8rem; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800;
+      letter-spacing: -.02em; margin-bottom: 16px;
+    }
+    .section-sub { color: var(--muted); max-width: 520px; margin: 0 auto; font-size: 1rem; }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .service-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 32px;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+      position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(108,99,255,.06) 0%, transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .service-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: var(--glow); }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; margin-bottom: 22px;
+    }
+    .icon-purple { background: rgba(108,99,255,.2); }
+    .icon-cyan   { background: rgba(0,212,255,.15); }
+    .icon-pink   { background: rgba(255,101,132,.15); }
+    .icon-green  { background: rgba(52,211,153,.15); }
+    .service-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+    .service-card p  { color: var(--muted); font-size: .9rem; line-height: 1.7; margin-bottom: 20px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      color: var(--muted); font-size: .75rem; font-weight: 500;
+      padding: 4px 10px; border-radius: 20px;
+    }
+
+    /* ── PROJECTS ── */
+    #projects { background: rgba(255,255,255,.015); }
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+    .project-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+    }
+    .project-card:hover { transform: translateY(-4px); box-shadow: var(--glow); border-color: var(--accent); }
+    .project-img {
+      height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .project-img-1 { background: linear-gradient(135deg, #1a0533, #2d1066); }
+    .project-img-2 { background: linear-gradient(135deg, #001a2e, #003d66); }
+    .project-img-3 { background: linear-gradient(135deg, #1a0d2e, #3d1a6b); }
+    .project-img-4 { background: linear-gradient(135deg, #0d1a0d, #1a4d1a); }
+    .project-img-5 { background: linear-gradient(135deg, #2e1a00, #6b3d00); }
+    .project-img-6 { background: linear-gradient(135deg, #1a001a, #4d004d); }
+    .project-body { padding: 24px; }
+    .project-body h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .project-body p  { color: var(--muted); font-size: .88rem; line-height: 1.65; margin-bottom: 16px; }
+    .project-meta { display: flex; align-items: center; justify-content: space-between; }
+    .project-tech { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tech-badge {
+      background: rgba(108,99,255,.15); color: var(--accent);
+      font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 6px;
+    }
+    .project-link {
+      color: var(--accent2); font-size: .8rem; font-weight: 600; text-decoration: none;
+      display: flex; align-items: center; gap: 4px; white-space: nowrap;
+    }
+    .project-link:hover { color: var(--text); }
+
+    /* ── PROCESS ── */
+    .process-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+    .step-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px 24px; text-align: center;
+      position: relative;
+    }
+    .step-num {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gradient); display: flex; align-items: center;
+      justify-content: center; font-size: .75rem; font-weight: 800; color: #fff;
+    }
+    .step-icon { font-size: 2rem; margin: 10px 0 14px; }
+    .step-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: 8px; }
+    .step-card p  { color: var(--muted); font-size: .82rem; line-height: 1.6; }
+
+    /* ── TECH STACK ── */
+    #stack { background: rgba(255,255,255,.015); }
+    .stack-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 16px;
+    }
+    .stack-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 12px; text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .stack-item:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .stack-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .stack-name { font-size: .8rem; font-weight: 600; color: var(--muted); }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 80px 48px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(108,99,255,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section h2 { margin-bottom: 16px; }
+    .cta-section p  { color: var(--muted); margin-bottom: 36px; font-size: 1rem; max-width: 460px; margin-left: auto; margin-right: auto; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo {
+      font-weight: 700; font-size: 1.1rem;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .footer-links { display: flex; gap: 24px; list-style: none; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: .85rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { color: var(--muted); font-size: .8rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
+      section { padding: 72px 0; }
+      .cta-section { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAV ══ -->
+  <nav>
+    <div class="nav-inner">
+      <span class="logo">⚡ AI Automations</span>
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#stack">Tech Stack</a></li>
+      </ul>
+      <a href="#contact" class="nav-cta">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="container hero-wrapper">
+      <div class="hero-content">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Available for new projects
+        </div>
+        <h1>
+          I Build <span class="gradient-text">AI-Powered</span><br />
+          Automations &amp;<br />
+          Smart Experiences
+        </h1>
+        <p class="hero-sub">
+          From intelligent chatbots and workflow automations to
+          AI-enhanced websites — I help businesses save time,
+          delight users, and stay ahead of the curve.
+        </p>
+        <div class="hero-btns">
+          <a href="#projects" class="btn-primary">View My Work</a>
+          <a href="#contact"  class="btn-outline">Let's Talk</a>
+        </div>
+      </div>
+      <!-- decorative SVG blob -->
+      <svg class="hero-visual" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#6c63ff"/>
+            <stop offset="100%" stop-color="#00d4ff"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#g1)"
+          d="M400,290 C430,340 410,410 360,440 C310,470 240,460 190,430
+             C140,400 110,340 120,280 C130,220 180,170 240,150
+             C300,130 370,140 400,290 Z"/>
+        <circle cx="250" cy="250" r="120" fill="none" stroke="url(#g1)" stroke-width="1" opacity=".5"/>
+        <circle cx="250" cy="250" r="180" fill="none" stroke="url(#g1)" stroke-width=".5" opacity=".3"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ══ STATS ══ -->
+  <div class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-num">50+</div>
+          <div class="stat-label">Automations Deployed</div>
+        </div>
+        <div>
+          <div class="stat-num">30+</div>
+          <div class="stat-label">Chatbots Built</div>
+        </div>
+        <div>
+          <div class="stat-num">20+</div>
+          <div class="stat-label">Websites Upgraded</div>
+        </div>
+        <div>
+          <div class="stat-num">10k+</div>
+          <div class="stat-label">Hours Saved for Clients</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SERVICES ══ -->
+  <section id="services">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">What I Do</div>
+        <h2>Services That <span class="gradient-text">Drive Results</span></h2>
+        <p class="section-sub">End-to-end AI solutions tailored to your workflow and goals.</p>
+      </div>
+      <div class="services-grid">
+
+        <div class="service-card">
+          <div class="service-icon icon-purple">🤖</div>
+          <h3>Workflow Automation</h3>
+          <p>Eliminate repetitive tasks with intelligent automation pipelines. Connect your apps, trigger actions on events, and let data flow without manual effort.</p>
+          <div class="tag-list">
+            <span class="tag">Zapier / Make</span>
+            <span class="tag">n8n</span>
+            <span class="tag">Python Scripts</span>
+            <span class="tag">API Integration</span>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon icon-cyan">💬</div>
+          <h3>AI Chatbot Creation</h3>
+          <p>Custom chatbots that understand context, handle complex queries, and integrate seamlessly into your website, Slack, WhatsApp, or any platform.</p>
+          <div class="tag-list">
+            <span class="tag">OpenAI / Claude</span>
+            <span class="tag">RAG Systems</span>
+            <span class="tag">Fine-tuning</span>
+            <span class="tag">Multi-platform</span>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon icon-pink">🌐</div>
+          <h3>AI Website Upgrades</h3>
+          <p>Transform static websites into intelligent experiences — smart search, personalised content, AI-generated copy, and conversion-boosting features.</p>
+          <div class="tag-list">
+            <span class="tag">Semantic Search</span>
+            <span class="tag">Personalisation</span>
+            <span class="tag">AI Copywriting</span>
+            <span class="tag">React / Next.js</span>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon icon-green">📊</div>
+          <h3>Data & AI Pipelines</h3>
+          <p>Build robust data pipelines that feed your AI models with clean, structured information — enabling better predictions and actionable insights.</p>
+          <div class="tag-list">
+            <span class="tag">Python / Pandas</span>
+            <span class="tag">ETL Pipelines</span>
+            <span class="tag">Vector DBs</span>
+            <span class="tag">LangChain</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROJECTS ══ -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Portfolio</div>
+        <h2>Featured <span class="gradient-text">Projects</span></h2>
+        <p class="section-sub">Real automations and AI tools built for real businesses.</p>
+      </div>
+      <div class="projects-grid">
+
+        <div class="project-card">
+          <div class="project-img project-img-1">🤖</div>
+          <div class="project-body">
+            <h3>Customer Support Chatbot</h3>
+            <p>RAG-powered chatbot trained on company docs — handles 80% of tier-1 support tickets automatically with human escalation logic.</p>
+            <div class="project-meta">
+              <div class="project-tech">
+                <span class="tech-badge">Claude API</span>
+                <span class="tech-badge">Pinecone</span>
+                <span class="tech-badge">Python</span>
+              </div>
+              <a href="#contact" class="project-link">Details →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-img project-img-2">⚡</div>
+          <div class="project-body">
+            <h3>Lead Qualification Automation</h3>
+            <p>End-to-end pipeline that scores inbound leads via AI, routes them to the right sales rep, and sends personalised outreach — all automatically.</p>
+            <div class="project-meta">
+              <div class="project-tech">
+                <span class="tech-badge">n8n</span>
+                <span class="tech-badge">OpenAI</span>
+                <span class="tech-badge">HubSpot</span>
+              </div>
+              <a href="#contact" class="project-link">Details →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-img project-img-3">🌐</div>
+          <div class="project-body">
+            <h3>AI-Enhanced E-Commerce Site</h3>
+            <p>Upgraded product search with semantic understanding, added personalised recommendations, and AI-generated product descriptions at scale.</p>
+            <div class="project-meta">
+              <div class="project-tech">
+                <span class="tech-badge">Next.js</span>
+                <span class="tech-badge">OpenAI</span>
+                <span class="tech-badge">Supabase</span>
+              </div>
+              <a href="#contact" class="project-link">Details →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-img project-img-4">📧</div>
+          <div class="project-body">
+            <h3>Automated Email Campaigns</h3>
+            <p>AI-driven drip campaign system that writes and sends personalised emails based on user behaviour triggers — open rates up 42%.</p>
+            <div class="project-meta">
+              <div class="project-tech">
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">SendGrid</span>
+                <span class="tech-badge">GPT-4o</span>
+              </div>
+              <a href="#contact" class="project-link">Details →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-img project-img-5">📱</div>
+          <div class="project-body">
+            <h3>WhatsApp Business Bot</h3>
+            <p>Conversational ordering and appointment booking system via WhatsApp — integrated with Google Calendar and payment gateways.</p>
+            <div class="project-meta">
+              <div class="project-tech">
+                <span class="tech-badge">Twilio</span>
+                <span class="tech-badge">LangChain</span>
+                <span class="tech-badge">FastAPI</span>
+              </div>
+              <a href="#contact" class="project-link">Details →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-img project-img-6">🔍</div>
+          <div class="project-body">
+            <h3>Internal Knowledge Assistant</h3>
+            <p>Slack bot that answers employee questions by searching internal docs, wikis, and past tickets — onboarding time reduced by 60%.</p>
+            <div class="project-meta">
+              <div class="project-tech">
+                <span class="tech-badge">Slack API</span>
+                <span class="tech-badge">Claude</span>
+                <span class="tech-badge">Weaviate</span>
+              </div>
+              <a href="#contact" class="project-link">Details →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROCESS ══ -->
+  <section id="process">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">How It Works</div>
+        <h2>My <span class="gradient-text">Process</span></h2>
+        <p class="section-sub">A clear, collaborative approach from idea to live deployment.</p>
+      </div>
+      <div class="process-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-icon">🎯</div>
+          <h3>Discovery</h3>
+          <p>We map your workflows, pain points, and goals to find the highest-impact opportunities for automation and AI.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-icon">🗺️</div>
+          <h3>Strategy</h3>
+          <p>I design a solution architecture — tools, models, integrations — tailored to your stack and budget.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-icon">⚙️</div>
+          <h3>Build</h3>
+          <p>Rapid development with continuous feedback loops. You see working demos early and often.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-icon">🚀</div>
+          <h3>Launch</h3>
+          <p>Smooth deployment, thorough testing, and handover with documentation so your team can own it.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <div class="step-icon">📈</div>
+          <h3>Optimise</h3>
+          <p>Post-launch monitoring and iteration to keep your automation performing as your business grows.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TECH STACK ══ -->
+  <section id="stack">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Tech Stack</div>
+        <h2>Tools &amp; <span class="gradient-text">Technologies</span></h2>
+        <p class="section-sub">The best tools for the job — always up to date with the latest in AI.</p>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-item"><div class="stack-icon">🐍</div><div class="stack-name">Python</div></div>
+        <div class="stack-item"><div class="stack-icon">⚛️</div><div class="stack-name">React / Next.js</div></div>
+        <div class="stack-item"><div class="stack-icon">🧠</div><div class="stack-name">OpenAI</div></div>
+        <div class="stack-item"><div class="stack-icon">🤖</div><div class="stack-name">Claude API</div></div>
+        <div class="stack-item"><div class="stack-icon">🔗</div><div class="stack-name">LangChain</div></div>
+        <div class="stack-item"><div class="stack-icon">⚡</div><div class="stack-name">n8n / Make</div></div>
+        <div class="stack-item"><div class="stack-icon">🗄️</div><div class="stack-name">Pinecone</div></div>
+        <div class="stack-item"><div class="stack-icon">🌩️</div><div class="stack-name">AWS / GCP</div></div>
+        <div class="stack-item"><div class="stack-icon">🐳</div><div class="stack-name">Docker</div></div>
+        <div class="stack-item"><div class="stack-icon">🔥</div><div class="stack-name">FastAPI</div></div>
+        <div class="stack-item"><div class="stack-icon">💬</div><div class="stack-name">Twilio</div></div>
+        <div class="stack-item"><div class="stack-icon">📊</div><div class="stack-name">Supabase</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CTA ══ -->
+  <section id="contact">
+    <div class="container">
+      <div class="cta-section">
+        <div class="section-tag">Get In Touch</div>
+        <h2>Ready to <span class="gradient-text">Automate &amp; Elevate</span>?</h2>
+        <p>Tell me about your project and let's figure out how AI can save you time, money, and headaches.</p>
+        <div class="cta-btns">
+          <a href="mailto:hello@example.com" class="btn-primary">📧 Send a Message</a>
+          <a href="https://calendly.com" class="btn-outline">📅 Book a Free Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <span class="footer-logo">⚡ AI Automations</span>
+        <ul class="footer-links">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <span class="footer-copy">© 2026 · Built with AI</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
